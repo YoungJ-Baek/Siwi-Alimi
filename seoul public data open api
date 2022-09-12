@@ -1,5 +1,7 @@
 #1 Seoul City Live Accident Info
 
+url form : http://oepnapi.seoul.go.kr:8088/(KEY)/TYPE/SERVICE/START_INDEX/END_INDEX/
+
 sample url: http://openapi.seoul.go.kr:8088/(KEY)/xml/AccInfo/1/5/
 
 input
@@ -27,10 +29,100 @@ output
 10	GRS80TM_Y	TM Y 좌표
 11	ACC_INFO	돌발 내용
 
+INFO / ERROR
+
+INFO-000	정상 처리되었습니다
+ERROR-300	필수 값이 누락되어 있습니다.
+요청인자를 참고 하십시오.
+INFO-100	인증키가 유효하지 않습니다.
+인증키가 없는 경우, 열린 데이터 광장 홈페이지에서 인증키를 신청하십시오.
+ERROR-301	파일타입 값이 누락 혹은 유효하지 않습니다.
+요청인자 중 TYPE을 확인하십시오.
+ERROR-310	해당하는 서비스를 찾을 수 없습니다.
+요청인자 중 SERVICE를 확인하십시오.
+ERROR-331	요청시작위치 값을 확인하십시오.
+요청인자 중 START_INDEX를 확인하십시오.
+ERROR-332	요청종료위치 값을 확인하십시오.
+요청인자 중 END_INDEX를 확인하십시오.
+ERROR-333	요청위치 값의 타입이 유효하지 않습니다.
+요청위치 값은 정수를 입력하세요.
+ERROR-334	요청종료위치 보다 요청시작위치가 더 큽니다.
+요청시작조회건수는 정수를 입력하세요.
+ERROR-335	샘플데이터(샘플키:sample) 는 한번에 최대 5건을 넘을 수 없습니다.
+요청시작위치와 요청종료위치 값은 1 ~ 5 사이만 가능합니다.
+ERROR-336	데이터요청은 한번에 최대 1000건을 넘을 수 없습니다.
+요청종료위치에서 요청시작위치를 뺀 값이 1000을 넘지 않도록 수정하세요.
+ERROR-500	서버 오류입니다.
+지속적으로 발생시 열린 데이터 광장으로 문의(Q&A) 바랍니다.
+ERROR-600	데이터베이스 연결 오류입니다.
+지속적으로 발생시 열린 데이터 광장으로 문의(Q&A) 바랍니다.
+ERROR-601	SQL 문장 오류 입니다.
+지속적으로 발생시 열린 데이터 광장으로 문의(Q&A) 바랍니다.
+INFO-200	해당하는 데이터가 없습니다.
+
+
 *샘플 코드
 KEY : 637757646f716f723430795a534f47
 
 url : http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccInfo/1/100/
+
+import requests
+
+url = 'http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccInfo/1/100/'
+
+response = requests.get(url)
+print(response.content)
+
+
+
+
+#2 Seoul Accident Main Code / 서울시 돌발 유형 코드 정보
+
+input : 위와 동일
+
+output
+
+공통	list_total_count	총 데이터 건수 (정상조회 시 출력됨)
+공통	RESULT.CODE	요청결과 코드 (하단 메세지설명 참고)
+공통	RESULT.MESSAGE	요청결과 메시지 (하단 메세지설명 참고)
+1	ACC_TYPE	돌발 유형 코드
+2	ACC_TYPE_NM	돌발 유형 코드 명
+
+*샘플 코드
+
+KEY : 637757646f716f723430795a534f47
+
+url : http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccMainCode/1/100/
+
+import requests
+
+url = 'http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccInfo/1/100/'
+
+response = requests.get(url)
+print(response.content)
+
+
+
+
+#3 Seoul Accident Sub Code / 서울시 돌발 세부유형 코드 정보
+
+
+input : 위와 동일
+
+output
+
+No	출력명	출력설명
+공통	list_total_count	총 데이터 건수 (정상조회 시 출력됨)
+공통	RESULT.CODE	요청결과 코드 (하단 메세지설명 참고)
+공통	RESULT.MESSAGE	요청결과 메시지 (하단 메세지설명 참고)
+1	ACC_DTYPE	돌발 세부 유형 코드
+2	ACC_DTYPE_NM	돌발 세부 유형 코드 명
+
+*샘플 코드
+
+KEY : 637757646f716f723430795a534f47
+
+url : http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccSubCode/1/100/
 
 import requests
 
