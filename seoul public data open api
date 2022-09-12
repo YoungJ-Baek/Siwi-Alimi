@@ -1,0 +1,40 @@
+#1 Seoul City Live Accident Info
+
+sample url: http://openapi.seoul.go.kr:8088/(KEY)/xml/AccInfo/1/5/
+
+input
+
+KEY : type: string / key
+TYPE : type : string / defines type of the data file / xmlf -> xml , xls -> excel file, json -> json file
+SERVICE : type : string / name of the service (AccInfo)
+START_INDEX : type : integer / 요청시작위치 / 페이징 시작번호:데이터 행 시작번호
+END_INDEX : type : integer / 요청종료위치 / 정수 입력, 페이징 끝번호: 데이터 행 끝번호
+
+output
+
+공통	list_total_count	총 데이터 건수 (정상조회 시 출력됨)
+공통	RESULT.CODE	요청결과 코드 (하단 메세지설명 참고)
+공통	RESULT.MESSAGE	요청결과 메시지 (하단 메세지설명 참고)
+1	ACC_ID	돌발 아이디
+2	OCCR_DATE	발생 일자
+3	OCCR_TIME	발생 시각
+4	EXP_CLR_DATE	종료 예정 일자
+5	EXP_CLR_TIME	종료 예정 시각
+6	ACC_TYPE	돌발 유형 코드
+7	ACC_DTYPE	돌발 세부 유형 코드
+8	LINK_ID	링크 아이디
+9	GRS80TM_X	TM X 좌표
+10	GRS80TM_Y	TM Y 좌표
+11	ACC_INFO	돌발 내용
+
+*샘플 코드
+KEY : 637757646f716f723430795a534f47
+
+url : http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccInfo/1/100/
+
+import requests
+
+url = 'http://openapi.seoul.go.kr:8088/637757646f716f723430795a534f47/xls/AccInfo/1/100/'
+
+response = requests.get(url)
+print(response.content)
