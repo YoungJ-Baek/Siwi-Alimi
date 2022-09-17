@@ -3,4 +3,4 @@ The project aims to collect less accessible public data for the public good. Her
 
 ## Contributors
 - https://github.com/YoungJ-Baek
-- https://github.com/qordnrwls
+- https://github.com/Wookjin-Baek
