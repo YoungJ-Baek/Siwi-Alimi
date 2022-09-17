@@ -20,7 +20,7 @@ def mountChromeBrowser(options=None):
     
     return driver
 
-def generateChecklist(date=None, type=None, location=None, restriction=None, alternative=None, detail=None):
+def generateChecklistCurrent(date=None, type=None, location=None, restriction=None, alternative=None, detail=None):
     checklist = []
     if date is not None: checklist.append(0)
     if type is not None: checklist.append(1)
@@ -28,6 +28,16 @@ def generateChecklist(date=None, type=None, location=None, restriction=None, alt
     if restriction is not None: checklist.append(3)
     if alternative is not None: checklist.append(4)
     if detail is not None: checklist.append(5)
+    
+    return checklist
+
+def generateChecklistFuture(date=None, type=None, restriction=None, location=None, detail=None):
+    checklist = []
+    if date is not None: checklist.append(0)
+    if type is not None: checklist.append(1)
+    if restriction is not None: checklist.append(2)
+    if location is not None: checklist.append(3)
+    if detail is not None: checklist.append(4)
     
     return checklist
 
@@ -40,23 +50,31 @@ def parseWebSite(driver=None, url=None):
 
     return soup
 
-def getNewInfo(soup=None, checklist=None, date=None, type=None, location=None, restriction=None, alternative=None, detail=None):
+def getNewInfo(soup=None, checklist=None, date=None, type=None, location=None, restriction=None, alternative=None, detail=None, flag='current'):
     raw_information = soup.find_all('td', 'last')
-    length = int(len(raw_information)/6)
+    sub_length = 6 if flag == 'current' else 5 if flag == 'future' else None
+    main_length = int(len(raw_information)/sub_length)
 
-    for index in range(0, length):
-        for subIndex in range(0, 6):
+    for index in range(0, main_length):
+        for subIndex in range(0, sub_length):
             if subIndex in checklist:
-                str_information = str(raw_information[int(index*6+subIndex)])
+                str_information = str(raw_information[int(index*sub_length+subIndex)])
                 formatStart = [m.start() for m in re.finditer('<', str_information)]
                 formatEnd = [m.start() for m in re.finditer('>', str_information)]
                 str_information = preprocessRaw(str_information=str_information, formatStart=formatStart, formatEnd=formatEnd)
-                if subIndex == 0: date.append(str_information)
-                elif subIndex == 1: type.append(str_information)
-                elif subIndex == 2: location.append(str_information)
-                elif subIndex == 3: restriction.append(str_information)
-                elif subIndex == 4: alternative.append(str_information)
-                elif subIndex == 5: detail.append(str_information.replace('\n', ' '))
+                if flag == 'current':
+                    if subIndex == 0: date.append(str_information)
+                    elif subIndex == 1: type.append(str_information)
+                    elif subIndex == 2: location.append(str_information)
+                    elif subIndex == 3: restriction.append(str_information)
+                    elif subIndex == 4: alternative.append(str_information)
+                    elif subIndex == 5: detail.append(str_information.replace('\n', ' '))
+                elif flag == 'future':
+                    if subIndex == 0: date.append(str_information)
+                    elif subIndex == 1: type.append(str_information)
+                    elif subIndex == 2: restriction.append(str_information)
+                    elif subIndex == 3: location.append(str_information)
+                    elif subIndex == 4: detail.append(str_information.replace('\n', ' '))
             else:
                 pass
 
@@ -105,31 +123,39 @@ if __name__ == "__main__":
 
     type_list = ['집회및행사', '공사', '차량고장', '교통사고'] # add restriction types as many as possible
     date, type, location, restriction, alternative, detail = [], [], None, [], None, [] # create lists for the information
-    date_next, type_next, location_next, restriction_next, alternative_next, detail_next = [], [], None, [], None, []
-    checklist = generateChecklist(date=date, type=type, restriction=restriction, detail=detail)
+    date_next, type_next, restriction_next, location_next, detail_next = [], [], [], None, []
+    checklist_current = generateChecklistCurrent(date=date, type=type, restriction=restriction, detail=detail)
+    checklist_future = generateChecklistFuture(date=date_next, type=type_next, restriction=restriction_next, detail=detail_next)
 
     options = initializeChromeOption()
     driver = mountChromeBrowser(options=options)
 
     while(1):
         soup_current = parseWebSite(driver=driver, url=url_current)
-        date, type, location, restriction, alternative, detail =  getNewInfo(soup=soup_current, checklist=checklist, date=date, type=type, restriction=restriction, detail=detail)
+        date, type, location, restriction, alternative, detail =  getNewInfo(soup=soup_current, checklist=checklist_current, date=date, type=type, restriction=restriction, detail=detail, flag='current')
         event_list = extractTypeEvent(type_list[0], type)
         
         soup_future = parseWebSite(driver=driver, url=url_future)
-        date_next, type_next, location_next, restriction_next, alternative_next, detail_next =  getNewInfo(soup=soup_future, checklist=checklist, date=date_next, type=type_next, restriction=restriction_next, detail=detail_next)
+        date_next, type_next, location_next, restriction_next, alternative_next, detail_next =  getNewInfo(soup=soup_future, checklist=checklist_future, date=date_next, type=type_next, restriction=restriction_next, detail=detail_next, flag='future')
+        print(date_next)
+        print(type_next)
+        print(location_next)
+        print(restriction_next)
+        print(alternative_next)
+        print(detail_next)
         compare_list = compareTwoDetail(detail1=detail, detail2=detail_next, event_list=event_list)
 
-        for index in event_list:
-            print(f'{index}.\t 기간:\t{date[index]}')
-            print(f'\t 유형/통제:\t{type[index]}/{restriction[index]}')
-            print(f'\t 세부 사항:\t{detail[index]}')
-        
+        # for index in event_list:
+        #     print(f'{index}.\t 기간:\t{date[index]}')
+        #     print(f'\t 유형/통제:\t{type[index]}/{restriction[index]}')
+        #     print(f'\t 세부 사항:\t{detail[index]}')
+        count = 1
         # for index in range(0, len(date_next)):
         #     if index not in compare_list:
-        #         print(f'{index}.\t 기간:\t{date_next[index]}')
+        #         print(f'{count}.\t 기간:\t{date_next[index]}')
         #         print(f'\t 유형/통제:\t{type_next[index]}/{restriction_next[index]}')
         #         print(f'\t 세부 사항:\t{detail_next[index]}')
+        #         count += 1
     
         date, type, location, restriction, alternative, detail = prepareNextParsing(secs=120, date=date, type=type, restriction=restriction, detail=detail)
         date_next, type_next, location_next, restriction_next, alternative_next, detail_next = prepareNextParsing(secs=120, date=date_next, type=type_next, restriction=restriction_next, detail=detail_next)
