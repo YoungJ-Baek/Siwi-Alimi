@@ -319,8 +319,9 @@ def future_protest():
         today_weekday = days[a]
 
         search_key = str(today_month) + '월 ' + str(today_day) + '일 ' + '(' + (today_weekday) + ') ' + "집회 및 행사"
-
-        driver = webdriver.Chrome(r"C:/Users/qordnrwls/myproject/chromedriver.exe")
+        
+        options = initializeChromeOption()
+        driver = mountChromeBrowser(options=options)
 
         driver.get('https://www.spatic.go.kr/article/list.do?boardId=4&currentPageNo=1&menuId=21&recordCountPerPage=10&searchEtc1=&searchEtc2=&searchEtc3=&searchEtc4=&searchEtc5=&searchSelect=title&searchValue=')
 
@@ -375,7 +376,7 @@ def future_protest():
             "outputs" : [
                 {
                     "simpleText" : {
-                        "text" : "예정 집회 및 시위 목록입니다." + "\n" + get_future_protest()
+                        "text" : str(datetime.datetime.now().date()) + "의 예정 집회 및 시위 목록입니다." + get_future_protest()
                     }
                 }
             ]
