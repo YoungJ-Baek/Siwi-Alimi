@@ -4,3 +4,6 @@ The project aims to collect less accessible public data for the public good. Her
 ## Contributors
 - https://github.com/YoungJ-Baek
 - https://github.com/Wookjin-Baek
+
+## Current Workspace
+Since this project is now focusing on public release via Kakao chatbot, it is recently moved to the new repository, [siwi-alimi-server](https://github.com/Wookjin-Baek/siwi-alimi-server)
